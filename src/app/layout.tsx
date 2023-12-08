@@ -27,7 +27,7 @@ export default function RootLayout({
         <Providers>
           <Theme
             accentColor="blue"
-            grayColor="mauve"
+            grayColor="auto"
             panelBackground="solid"
             scaling="100%"
             radius="large"
