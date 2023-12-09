@@ -62,7 +62,7 @@ export default function Dashboard() {
               color="blue"
               variant="soft"
               placeholder="Enter Receiver Address"
-              className=""
+              className="!h-12"
               {...register("receiverAddress", {
                 required: "Please Enter Receiver Address",
                 pattern: {
@@ -85,6 +85,7 @@ export default function Dashboard() {
               color="blue"
               variant="soft"
               placeholder="Enter Amount"
+              className="!h-12"
               my="2"
               {...register("amount", {
                 required: "Please Enter Amount",
@@ -103,7 +104,7 @@ export default function Dashboard() {
                 <span> Processing... </span>
               </div>
             ) : (
-              <span>Transfer</span>
+              <span>Secure Transfer</span>
             )}
           </Button>
         </form>
