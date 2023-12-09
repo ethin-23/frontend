@@ -1,0 +1,279 @@
+[
+  {
+    "type": "impl",
+    "name": "TxnJobs",
+    "interface_name": "contracts::private_txn::ITxnJobs"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "contracts::private_txn::JobStatus",
+    "variants": [
+      {
+        "name": "Pending",
+        "type": "()"
+      },
+      {
+        "name": "Failed",
+        "type": "()"
+      },
+      {
+        "name": "Success",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "contracts::private_txn::Job",
+    "members": [
+      {
+        "name": "amount",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "recipient",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "timestamp",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "status",
+        "type": "contracts::private_txn::JobStatus"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "core::array::Span::<contracts::private_txn::Job>",
+    "members": [
+      {
+        "name": "snapshot",
+        "type": "@core::array::Array::<contracts::private_txn::Job>"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "contracts::private_txn::ITxnJobs",
+    "items": [
+      {
+        "type": "function",
+        "name": "balance_of",
+        "inputs": [
+          {
+            "name": "addr",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "replace_class",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_transfer_jobs",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Span::<contracts::private_txn::Job>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "process_jobs",
+        "inputs": [
+          {
+            "name": "job_ids",
+            "type": "core::array::Array::<core::integer::u64>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "create_transfer_job",
+        "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u128"
+          },
+          {
+            "name": "recipient",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "ERC20MetadataImpl",
+    "interface_name": "openzeppelin::token::erc20::interface::IERC20Metadata"
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::token::erc20::interface::IERC20Metadata",
+    "items": [
+      {
+        "type": "function",
+        "name": "name",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "symbol",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "name",
+        "type": "core::felt252"
+      },
+      {
+        "name": "symbol",
+        "type": "core::felt252"
+      },
+      {
+        "name": "admin",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Transfer",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "from",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "to",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "value",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Approval",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "owner",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "spender",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "value",
+        "type": "core::integer::u256",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "Transfer",
+        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Transfer",
+        "kind": "nested"
+      },
+      {
+        "name": "Approval",
+        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Approval",
+        "kind": "nested"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "contracts::private_txn::balance::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "ERC20Event",
+        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Event",
+        "kind": "flat"
+      }
+    ]
+  }
+]

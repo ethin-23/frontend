@@ -1,6 +1,6 @@
 // import Image from "next/image";
 
-import { Button, Container, Flex, Heading, Link, Text } from "@radix-ui/themes";
+import { Button, Flex, Heading, Text } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 
 // import backgroundImage from "@/images/background.jpg";
