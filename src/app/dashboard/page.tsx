@@ -4,11 +4,14 @@ import { Container, Text, Box, TextFieldInput, Button } from "@radix-ui/themes";
 import { CardShimmer } from "@/components/common/CardShimmer";
 import {
   ADDRESS_VALIDATOR_REGEX,
+  API_BASE_URL,
   VOYAGER_BASE_ADDRESS,
+  JSON_API_ENCRYPT_PAYLOAD,
 } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { Spinner } from "@/components/common/Spinner";
+import toast from "react-hot-toast";
 
 interface IFormInput {
   receiverAddress: string;
@@ -23,9 +26,26 @@ export default function Dashboard() {
   } = useForm<IFormInput>();
   const [isFetchingEryptedData, setIsFetchingEncryptedData] = useState(false);
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setIsFetchingEncryptedData(true);
     console.log(data);
+    try {
+      const response = await fetch(`${API_BASE_URL}`, {
+        method: "POST",
+        body: JSON.stringify({
+          ...JSON_API_ENCRYPT_PAYLOAD,
+          params: `${data.receiverAddress},${data.amount}`,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log("result", result);
+      toast("Encryption Successfull, Submitting Transaction.");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   console.log(errors);
@@ -70,7 +90,6 @@ export default function Dashboard() {
                 required: "Please Enter Amount",
               })}
               type="number"
-              step="0.00000001"
             />
             <Text size="1" color="red" my="-2">
               {errors.amount?.message}
