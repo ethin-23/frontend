@@ -1,13 +1,4 @@
-import {
-  ec,
-  hash,
-  num,
-  json,
-  Contract,
-  WeierstrassSignatureType,
-  TypedData,
-  shortString,
-} from "starknet";
+import { TypedData, shortString } from "starknet";
 
 export const typedDataValidate: TypedData = {
   types: {
@@ -17,8 +8,8 @@ export const typedDataValidate: TypedData = {
       { name: "chainId", type: "felt" },
     ],
     Validate: [
-      { name: "randomNo", type: "felt" },
-      { name: "message", type: "felt" }, // array of felt
+      { name: "randomNo", type: "u128" },
+      { name: "message", type: "u128" },
     ],
   },
   primaryType: "Validate",
@@ -28,10 +19,28 @@ export const typedDataValidate: TypedData = {
     chainId: shortString.encodeShortString("SN_GOERLI"), // shortString of 'SN_GOERLI' (or 'SN_MAIN'), to be sure that signature can't be used by other network.
   },
   message: {
-    randomNo: "122333",
-    message: "test123",
+    randomNo: 1233,
+    message: 1237,
   },
 };
 
 // connect your account, then
 export const helper = () => {};
+
+export const formatDate = (date: Date) => {
+  const month = date.getMonth() + 1; // Add 1 to get the month in MM format
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  return `${month.toString().padStart(2, "0")}/${day
+    .toString()
+    .padStart(2, "0")} ${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
+};
+
+export const shortenedAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};

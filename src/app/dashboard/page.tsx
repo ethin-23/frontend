@@ -8,6 +8,7 @@ import {
   Button,
   Flex,
   Heading,
+  Separator,
 } from "@radix-ui/themes";
 import { CardShimmer } from "@/components/common/CardShimmer";
 import {
@@ -15,6 +16,7 @@ import {
   API_BASE_URL,
   VOYAGER_BASE_ADDRESS,
   JSON_API_ENCRYPT_PAYLOAD,
+  TRANSACTION_HISTORY_STEALTHYSTARK,
 } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
@@ -23,10 +25,12 @@ import toast from "react-hot-toast";
 import { uuid } from "uuidv4";
 import { useAccount } from "@starknet-react/core";
 import { CallData, WeierstrassSignatureType } from "starknet";
-import { typedDataValidate } from "@/utils/helpers";
+import { formatDate, typedDataValidate } from "@/utils/helpers";
 import { useLocalStorage } from "react-use";
 import { AwesomeModal } from "@/components/common/Modal";
 import PrivatTxnAbi from "@/abis/PrivateTxn.json";
+import { Alert } from "@/components/common/Alert";
+import { Transaction, TransactionHistory } from "@/types";
 
 interface IFormInput {
   receiverAddress: string;
@@ -38,21 +42,7 @@ interface EncryptionResult {
   n: string;
   r: string;
 }
-// type Window = {
-//   starknet: {
-//     account: {
-//       execute: (
-//         contractAddress: string,
-//         entrypoint: string,
-//         calldata: Array<any>,
-//         options?: {
-//           maxFee?: number;
-//           callerAddress?: string;
-//         }
-//       ) => Promise<any>;
-//     };
-//   };
-// };
+
 const contract_address = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 export default function Dashboard() {
@@ -69,7 +59,15 @@ export default function Dashboard() {
   const { address, account } = useAccount();
   const [encryptionResult, setEncryptionResult] =
     useState<EncryptionResult | null>(null);
-  const [receiverAddress, setReceiverAddress] = useState("");
+  const [txnDetail, setTxnDetail] = useState<{
+    receiverAddress: string;
+    amount: number;
+  } | null>();
+
+  const [previousTxHash, setPreviousTxHash] = useState("");
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [transactionHistory, setTransactionHistory] =
+    useLocalStorage<TransactionHistory>(TRANSACTION_HISTORY_STEALTHYSTARK, {});
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setEncryptionResult(null);
@@ -90,7 +88,7 @@ export default function Dashboard() {
       console.log("result", result);
       setEncryptionResult(result.result);
       setIsFetchingEncryptedData(false);
-      setReceiverAddress(data.receiverAddress);
+      setTxnDetail(data);
       setShowEncryptModal(true);
     } catch (error) {
       console.error(error);
@@ -110,12 +108,16 @@ export default function Dashboard() {
   console.log(errors);
 
   const handleTransfer = async () => {
-    if (!receiverAddress) {
-      return toast("Please enter receiver address");
+    if (!address) {
+      return toast.error("Please connect your wallet first!");
+    }
+    if (!txnDetail?.receiverAddress) {
+      return toast.error("Please enter receiver address");
     }
     if (!encryptionResult?.cipher) {
-      return toast("Please secure your transaction first!");
+      return toast.error("Please secure your transaction first!");
     }
+
     try {
       const account: any =
         (window as any).starknet?.account ??
@@ -126,11 +128,31 @@ export default function Dashboard() {
         entrypoint: "create_transfer_job",
         calldata: CallData.compile({
           amount: encryptionResult?.cipher,
-          recipient: receiverAddress,
+          recipient: txnDetail.receiverAddress,
         }),
       });
-      console.log("result: ", result);
+
+      console.log("result:134 ", result);
+      if (result.transaction_hash) {
+        const txn: Transaction = {
+          senderWallet: address,
+          receiverWallet: txnDetail.receiverAddress,
+          amount: txnDetail.amount,
+          encryptedAmount: encryptionResult.cipher,
+          txn_hash: result.transaction_hash,
+          date_time: formatDate(new Date()),
+        };
+        const previousTxns = transactionHistory || {};
+        if (!previousTxns[address]) {
+          const txns = [txn];
+          previousTxns[address] = txns;
+        } else {
+          previousTxns[address] = [txn, ...previousTxns[address]];
+        }
+        setTransactionHistory(transactionHistory);
+      }
     } catch (error) {
+      toast.error("Please accept Transaction to continue!");
       console.error(error);
     }
   };
@@ -217,9 +239,18 @@ export default function Dashboard() {
               <Text>{encryptionResult.cipher}</Text>
             </Box>
           )}
-          <Button onClick={handleTransfer}>Proceed With Transfer</Button>
+          <Button onClick={handleTransfer} size="4">
+            Proceed With Transfer
+          </Button>
         </Flex>
       </AwesomeModal>
+      <Alert
+        open={showSuccessAlert}
+        title="Transaction Queued Successfully!"
+        description="What this means is we have started verifying your transaction details, once its done, amount will be reflected in the receiver's account"
+        okButtonLabel="Yes, Got It"
+        showCancel={false}
+      />
     </Container>
   );
 }

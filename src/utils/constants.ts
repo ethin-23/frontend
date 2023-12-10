@@ -8,3 +8,6 @@ export const JSON_API_ENCRYPT_PAYLOAD = {
   params: "wallet_address,amount",
   id: 1,
 };
+
+export const TRANSACTION_HISTORY_STEALTHYSTARK =
+  "TRANSACTION_HISTORY_STEALTHYSTARK";

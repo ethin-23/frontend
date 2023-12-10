@@ -3,19 +3,23 @@
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 import { useMemo } from "react";
 import { GenericButton } from "./GenericButton";
+import { shortenedAddress } from "@/utils/helpers";
 
 export const ConnectButton = () => {
   const { address } = useAccount();
   const { connectors, pendingConnector, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const shortenedAddress = useMemo(() => {
+  const shortenedAddressMemoised = useMemo(() => {
     if (!address) return "";
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return shortenedAddress(address);
   }, [address]);
 
   return address ? (
-    <GenericButton label={shortenedAddress} onClick={() => disconnect()} />
+    <GenericButton
+      label={shortenedAddressMemoised}
+      onClick={() => disconnect()}
+    />
   ) : (
     <div className="flex items-center gap-4">
       <div className="flex gap-4">

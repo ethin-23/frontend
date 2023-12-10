@@ -19,6 +19,9 @@ export const Header = () => {
         <Link href="/dashboard" className="py-4">
           Dashboard
         </Link>
+        <Link href="/dashboard/txn-history" className="py-4">
+          Transaction History
+        </Link>
         <Link href={GITHUB_CONTRACTS_URL} target="_blank" className="py-4">
           <GitHubLogoIcon />
         </Link>
