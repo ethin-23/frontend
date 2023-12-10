@@ -155,6 +155,7 @@ export default function Dashboard() {
         return toast.error("Failed to decrypt the balance");
       }
     } catch (err) {}
+    setIsRefetchingDecryptedBalance(false);
   };
 
   console.log(errors);
