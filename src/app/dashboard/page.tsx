@@ -99,6 +99,7 @@ export default function Dashboard() {
     if (!account) {
       return toast("Please connect your wallet first!");
     }
+    setIsRefetchingDecryptedBalance(true);
     const signature2 = (await account.signMessage(
       typedDataValidate
     )) as WeierstrassSignatureType;
@@ -163,7 +164,16 @@ export default function Dashboard() {
         <Flex align="center" justify="center">
           <strong>Received Balance</strong>: {decryptedBalance}
         </Flex>
-        <Button onClick={refetchDecryptedBalance}>Refresh</Button>
+        <Button onClick={refetchDecryptedBalance} variant="surface" size="4">
+          {isRefetchingDecryptedBalance ? (
+            <div className="flex items-center gap-2">
+              <Spinner />
+              <span> Fetching Balance... </span>
+            </div>
+          ) : (
+            <span>Refresh</span>
+          )}
+        </Button>
       </Box>
       <Box className="mx-auto flex h-96 w-2/3 flex-col gap-4 border border-dashed border-sky-200 p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -210,7 +220,12 @@ export default function Dashboard() {
             </Text>
           </label>
 
-          <Button type="submit" size="4" disabled={isFetchingEryptedData}>
+          <Button
+            type="submit"
+            size="4"
+            disabled={isFetchingEryptedData}
+            variant="surface"
+          >
             {isFetchingEryptedData ? (
               <div className="flex items-center gap-2">
                 <Spinner />
@@ -239,7 +254,7 @@ export default function Dashboard() {
               <Text>{encryptionResult.cipher}</Text>
             </Box>
           )}
-          <Button onClick={handleTransfer} size="4">
+          <Button onClick={handleTransfer} size="4" variant="surface">
             Proceed With Transfer
           </Button>
         </Flex>
