@@ -14,7 +14,6 @@ import { CardShimmer } from "@/components/common/CardShimmer";
 import {
   ADDRESS_VALIDATOR_REGEX,
   API_BASE_URL,
-  VOYAGER_BASE_ADDRESS,
   JSON_API_ENCRYPT_PAYLOAD,
   TRANSACTION_HISTORY_STEALTHYSTARK,
 } from "@/utils/constants";
@@ -24,7 +23,7 @@ import { Spinner } from "@/components/common/Spinner";
 import toast from "react-hot-toast";
 import { uuid } from "uuidv4";
 import { useAccount } from "@starknet-react/core";
-import { CallData, WeierstrassSignatureType } from "starknet";
+import { CallData, Contract, WeierstrassSignatureType } from "starknet";
 import { formatDate, typedDataValidate } from "@/utils/helpers";
 import { useLocalStorage } from "react-use";
 import { AwesomeModal } from "@/components/common/Modal";
@@ -78,7 +77,7 @@ export default function Dashboard() {
         method: "POST",
         body: JSON.stringify({
           ...JSON_API_ENCRYPT_PAYLOAD,
-          params: `${data.receiverAddress},${data.amount}`,
+          params: [data.receiverAddress, data.amount],
         }),
         headers: {
           "Content-Type": "application/json",
@@ -96,14 +95,47 @@ export default function Dashboard() {
   };
 
   const refetchDecryptedBalance = async () => {
-    if (!account) {
+    if (!address) {
       return toast("Please connect your wallet first!");
     }
     setIsRefetchingDecryptedBalance(true);
-    const signature2 = (await account.signMessage(
-      typedDataValidate
-    )) as WeierstrassSignatureType;
-    console.log("signature: ", signature2);
+
+    // const signature2 = (await account.signMessage(
+    //   typedDataValidate
+    // )) as WeierstrassSignatureType;
+    // console.log("signature: ", signature2);
+    try {
+      const account: any =
+        (window as any).starknet?.account ??
+        (window as any).starknet_braavos?.account;
+
+      const myTestContract = new Contract(
+        PrivatTxnAbi,
+        contract_address,
+        account.provider
+      );
+
+      const response = await myTestContract.balance_of(address);
+      const hidden_balance = parseInt(response);
+      try {
+        const response = await fetch(`${API_BASE_URL}`, {
+          method: "POST",
+          body: JSON.stringify({
+            ...JSON_API_ENCRYPT_PAYLOAD,
+            params: [address, hidden_balance],
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const result = await response.json();
+        console.log("decrypt result", result);
+        setEncryptionResult(result.result);
+      } catch (err) {
+        console.error(err);
+        return toast.error("Failed to decrypt the balance");
+      }
+    } catch (err) {}
   };
 
   console.log(errors);
