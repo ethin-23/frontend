@@ -14,7 +14,7 @@ export const Header = () => {
     <Container>
       <Box height="0" className="absolute left-4 top-8 flex items-center gap-4">
         <Link href="/" className="p-4">
-          <Heading className="leading-2">Stark Mask</Heading>
+          <Heading className="leading-2">Stealthy Stark</Heading>
         </Link>
         <Link href="/dashboard" className="py-4">
           Dashboard

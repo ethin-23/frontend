@@ -12,7 +12,7 @@ export const JSON_API_ENCRYPT_PAYLOAD = {
 
 export const JSON_API_DECRYPT_PAYLOAD = {
   jsonrpc: "2.0",
-  method: "decrypt",
+  method: "decipher",
   params: [],
   id: 1,
 };

@@ -16,7 +16,7 @@ export function Hero() {
       >
         <h1 className="font-display text-6xl font-bold sm:text-7xl">
           <Heading className="block text-center" size="9" highContrast>
-            Stark Mask
+            Stealthy Stark
           </Heading>
           <Text className="block text-center text-sm">
             Private Payments With Starknet

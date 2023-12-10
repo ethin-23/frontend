@@ -15,6 +15,7 @@ import {
   ADDRESS_VALIDATOR_REGEX,
   API_BASE_URL,
   JSON_API_ENCRYPT_PAYLOAD,
+  JSON_API_DECRYPT_PAYLOAD,
   TRANSACTION_HISTORY_STEALTHYSTARK,
 } from "@/utils/constants";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -23,8 +24,13 @@ import { Spinner } from "@/components/common/Spinner";
 import toast from "react-hot-toast";
 import { uuid } from "uuidv4";
 import { useAccount } from "@starknet-react/core";
-import { CallData, Contract, WeierstrassSignatureType } from "starknet";
-import { formatDate, typedDataValidate } from "@/utils/helpers";
+import {
+  CallData,
+  Contract,
+  WeierstrassSignatureType,
+  Provider,
+} from "starknet";
+import { formatDate, hexToDecimal, typedDataValidate } from "@/utils/helpers";
 import { useLocalStorage } from "react-use";
 import { AwesomeModal } from "@/components/common/Modal";
 import PrivatTxnAbi from "@/abis/PrivateTxn.json";
@@ -43,6 +49,13 @@ interface EncryptionResult {
 }
 
 const contract_address = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
+
+const provider = new Provider({
+  rpc: {
+    nodeUrl:
+      "https://starknet-goerli.g.alchemy.com/v2/Sxk1XpE0frZCVi3kHq9rESWNwP3dCHYC",
+  },
+});
 
 export default function Dashboard() {
   const {
@@ -83,9 +96,10 @@ export default function Dashboard() {
           "Content-Type": "application/json",
         },
       });
-      const result = await response.json();
+      let result = await response.json();
+      result = JSON.parse(result.result);
       console.log("result", result);
-      setEncryptionResult(result.result);
+      setEncryptionResult(result);
       setIsFetchingEncryptedData(false);
       setTxnDetail(data);
       setShowEncryptModal(true);
@@ -112,25 +126,30 @@ export default function Dashboard() {
       const myTestContract = new Contract(
         PrivatTxnAbi,
         contract_address,
-        account.provider
+        provider
       );
 
       const response = await myTestContract.balance_of(address);
-      const hidden_balance = parseInt(response);
+      const hidden_balance = response.toString();
+
+      console.log({ response, hidden_balance, address });
       try {
         const response = await fetch(`${API_BASE_URL}`, {
           method: "POST",
           body: JSON.stringify({
-            ...JSON_API_ENCRYPT_PAYLOAD,
+            ...JSON_API_DECRYPT_PAYLOAD,
             params: [address, hidden_balance],
           }),
           headers: {
             "Content-Type": "application/json",
           },
         });
-        const result = await response.json();
-        console.log("decrypt result", result);
-        setEncryptionResult(result.result);
+        let result = await response.json();
+        console.log("result", result);
+        result = JSON.parse(result.result);
+
+        console.log("decrypt result", result.amount);
+        setDecryptedBalance(hexToDecimal(result.amount));
       } catch (err) {
         console.error(err);
         return toast.error("Failed to decrypt the balance");

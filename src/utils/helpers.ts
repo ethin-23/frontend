@@ -44,3 +44,13 @@ export const shortenedAddress = (address: string) => {
   if (!address) return "";
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+export function hexToDecimal(hex: string) {
+  // Remove the leading "0x" if present
+  if (hex.startsWith("0x")) {
+    hex = hex.substring(2);
+  }
+
+  // Convert the hex string to a base-16 integer
+  return parseInt(hex, 16);
+}
