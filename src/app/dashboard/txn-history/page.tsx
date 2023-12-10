@@ -7,7 +7,7 @@ import { Container, Flex, Heading } from "@radix-ui/themes";
 import { useAccount } from "@starknet-react/core";
 import { useLocalStorage } from "react-use";
 
-export const TransactionHistoryPage = () => {
+export default function TransactionHistoryPage() {
   const { address } = useAccount();
 
   const [transactionHistory] = useLocalStorage<TransactionHistoryType>(
@@ -31,6 +31,4 @@ export const TransactionHistoryPage = () => {
       <TransactionHistory transactions={transactionHistory[address]} />
     </Container>
   );
-};
-
-export default TransactionHistoryPage;
+}
