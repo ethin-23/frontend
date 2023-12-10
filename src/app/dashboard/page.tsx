@@ -151,6 +151,10 @@ export default function Dashboard() {
           previousTxns[address] = [txn, ...previousTxns[address]];
         }
         setTransactionHistory(transactionHistory);
+        setShowEncryptModal(false);
+        setTimeout(() => {
+          setShowSuccessAlert(true);
+        }, 1000);
       }
     } catch (error) {
       toast.error("Please accept Transaction to continue!");
@@ -264,7 +268,7 @@ export default function Dashboard() {
         title="Transaction Queued Successfully!"
         description="What this means is we have started verifying your transaction details, once its done, amount will be reflected in the receiver's account"
         okButtonLabel="Yes, Got It"
-        showCancel={false}
+        setOpen={setShowSuccessAlert}
       />
     </Container>
   );

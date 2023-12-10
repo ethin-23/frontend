@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
+import { Dispatch, SetStateAction } from "react";
 
 type AlertProps = {
   title: string;
@@ -12,6 +13,7 @@ type AlertProps = {
   open: boolean;
   showOk?: boolean;
   showCancel?: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export const Alert = ({
@@ -23,9 +25,10 @@ export const Alert = ({
   open,
   showOk = true,
   showCancel = true,
+  setOpen,
 }: AlertProps) => {
   return (
-    <AlertDialog.Root open={open}>
+    <AlertDialog.Root open={open} onOpenChange={setOpen}>
       <AlertDialog.Content>
         <AlertDialog.Title>{title}</AlertDialog.Title>
         <AlertDialog.Description>{description}</AlertDialog.Description>
@@ -39,7 +42,7 @@ export const Alert = ({
           )}
           {showOk && (
             <AlertDialog.Action>
-              <Button variant="solid" color="red" onClick={okButtonHandler}>
+              <Button variant="solid" onClick={okButtonHandler}>
                 {okButtonLabel}
               </Button>
             </AlertDialog.Action>
